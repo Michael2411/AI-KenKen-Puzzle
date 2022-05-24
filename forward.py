@@ -147,6 +147,7 @@ if __name__ == "__main__":
     is_solved, solved = solve_kenken(
         grid, cage_constraints, size, number_cages, cages)
     if is_solved:
+        solved=solved.astype(int)
         print(solved)
     else:
         print("Cannot solve")
