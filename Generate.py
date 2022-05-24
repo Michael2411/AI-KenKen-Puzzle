@@ -123,12 +123,12 @@ def generate(size):
                         break
         koko_cages.append(cages_row)
 
-    return cages, koko_cages
+    return koko_cages
 
 
-cages, koko = generate(3)
-print("cages", cages)
-print("koko cages", koko)
+#cages, koko = generate(3)
+#print("cages", cages)
+#print("koko cages", koko)
 # print(cell)
 
 # return size, cages
