@@ -126,9 +126,10 @@ def generate(size):
     return cages, koko_cages
 
 
-cages, koko = generate(3)
-print("cages", cages)
-print("koko cages", koko)
+if __name__ == "__main__":
+    cages, koko = generate(3)
+    print("cages", cages)
+    print("koko cages", koko)
 # print(cell)
 
 # return size, cages
