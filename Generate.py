@@ -108,7 +108,7 @@ def generate(size):
         cages[-1] = [(cages[-1]), operator, int(abs(target))]
 #print("Mizo cages", cages)
 
-    koko_cages = []
+    return_cages = []
     for i in range(1, size+1):
         cages_row = []
         for j in range(1, size+1):
@@ -121,14 +121,14 @@ def generate(size):
                         cell_type = [k+1, cages[k][2], cages[k][1]]
                         cages_row.append(cell_type)
                         break
-        koko_cages.append(cages_row)
+        return_cages.append(cages_row)
 
-    return koko_cages
+    return return_cages
 
 
-#cages, koko = generate(3)
-#print("cages", cages)
-#print("koko cages", koko)
+if __name__ == "__main__":
+    cages = generate(3)
+    print("cages", cages)
 # print(cell)
 
 # return size, cages

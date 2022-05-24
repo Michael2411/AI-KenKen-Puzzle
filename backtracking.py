@@ -1,125 +1,160 @@
 import operator
-from itertools import product, permutations
+from itertools import product
 import numpy as np
+from functools import reduce
+from Generate import generate
 
 
 def calculate(numbers, target, op):
+
     operator_dict = {"+": operator.add,
                      "-": operator.sub,
                      "*": operator.mul,
                      "/": operator.truediv}
-
     running_total = numbers[0]
     for number in numbers[1:]:
         running_total = operator_dict[op](running_total, number)
-
     if running_total == target:
         return True
     return False
 
-def valid_number(row, column, board, size):
-    valid_column = set()
-    for number in range(1, size + 1):
-            valid_column.add(number)
-    valid_numbers = valid_column
-    yield from valid_numbers
 
-def is_valid_sum(board, instruction_array, number_groups):
-    for group in range(1, number_groups + 1):
-        coordinates = []
-        list_numbers = []
-        next_group = 0
-        for i, j in product([row for row in range(size)], [column for column in range(size)]):
-            if instruction_array[i][j][0] == group:
-                if instruction_array[row][column][2] == '=':
-                    next_group = 1
-                    break
-                target = instruction_array[i][j][1]
-                op = instruction_array[i][j][2]
-                list_numbers.append(int(board[i, j]))
-        if next_group == 1:
-            continue
-        combination_numbers = permutations(list_numbers, len(list_numbers))
-        for combination in combination_numbers:
-            target_reached = calculate(combination, target, op)
-            if target_reached:
-                break
-        if target_reached:
-            continue
-        else:
-            return False
-    return True
+def cage_calc(grid, cages, cage_number):
+    cage = list(cages.items())[cage_number]
+    target = cage[1][0]
+    operation = cage[1][1]
+    if operation == '=':
+        return True
+    cells = cage[1][2]
+    list_numbers = []
+    for r, c in cells:
+        list_numbers.append(grid[r, c])
+    if(operation == '-' or operation == '/'):
+        list_numbers.sort(reverse=True)
+    if calculate(list_numbers, target, operation):
+        return True          # the beak skips over the else
+    else:
+        return False           # this is done if the loop finishes normal
 
-def is_full(board, size):
+
+def grid_full(grid, size):
     for row in range(size):
         for column in range(size):
-            if board[row, column] == 0:
+            if grid[row, column] == 0:
                 return False
     return True
 
-def check_number(board,i,j):
-    for k in range(0, size ):
-        if ((board[i,j]== board[k,j])&(k !=i)) :
+
+def check_number(grid, i, j):
+    for k in range(0, size):
+        if ((grid[i, j] == grid[k, j]) & (k != i)):
             return 1
-        if ((board[i,j]== board[i,k])&(k!=j)):
+        if ((grid[i, j] == grid[i, k]) & (k != j)):
             return 1
+        # return True
 
 
-def solve_board(board, instruction_array, size, number_groups, domain):
-    if is_full(board, size):
-        if is_valid_sum(board, instruction_array, number_groups):
-            return True, board
-        return False, board
+def cage_full(grid, cages, cage_number):
+    cage = list(cages.items())[cage_number]
+    cells = cage[1][2]
+    list_numbers = []
+    for r, c in cells:
+        if grid[r, c] == 0:
+            return False
+    return True
+
+
+def cage_check(grid, cages, number_cages):
+    for k in range(number_cages):
+        if cage_full(grid, cages, k):
+            if cage_calc(grid, cages, k):
+                continue
+            return False
+    return True
+
+
+def solve_kenken(grid, cage_constraints, size, number_cages, domain):
+    if grid_full(grid, size):
+        return True, grid
     for i, j in product([row for row in range(size)],
                         [column for column in range(size)]):  # Product is from itertools library
-        if board[i, j] != 0:
+        if grid[i, j] != 0:
             continue
-        for number in  domain:
-            board[i, j] = number
+        for number in domain:
+            grid[i, j] = number
             ################
-            checking = check_number(board, i, j)
-            if(checking):
-                board[i,j]=0
+            number_not_valid = check_number(grid, i, j)
+            if(number_not_valid):
+                grid[i, j] = 0
                 continue
             ################
-            is_solved, board = solve_board(board, instruction_array, size, number_groups, domain)
+            if(not cage_check(grid, cages, number_cages)):
+                grid[i, j] = 0
+                continue
+            is_solved, grid = solve_kenken(
+                grid, cage_constraints, size, number_cages, domain)
             if is_solved:
-                return True, board
-            board[i, j] = 0
-        return False, board
-    return False, board
+                return True, grid
+            grid[i, j] = 0
+        return False, grid
+    return False, grid
 
 
-def fill_obvious(board, instruction_array, size):
+def fill_most_constrained(grid, cage_constraints, size):
     # Fill fixed numbers
     for row in range(size):
         for column in range(size):
-            if instruction_array[row][column][2] == '=':
-                board[row, column] = instruction_array[row][column][1]
-    return board
+            if cage_constraints[row][column][2] == '=':
+                grid[row, column] = cage_constraints[row][column][1]
+    return grid
+
+
+def make_cages(cage_constraints):
+    cages = {}
+    for r in range(0, size):
+        for c in range(0, size):
+            cage_number, target, op = cage_constraints[r][c]
+            if op:
+                if cage_number not in cages:
+                    cages[cage_number] = [target, op, []]
+                cages[cage_number][2].append((r, c))
+    return cages
 
 
 if __name__ == "__main__":
-    instruction_array =[
+    '''
+    cage_constraints =[
         [[1, 6, '*'], [2, 3, '='], [3, 6, '*']], 
         [[1, 6, '*'], [1, 6, '*'], [3, 6, '*']], 
         [[4, 2, '='], [1, 6, '*'], [3, 6, '*']]
         ]
 
-    size = len(instruction_array[0])
-    number_groups=0
+    cage_constraints =[
+    [[1, 1, '-'], [2, 18, '*'], [2, 18, '*']], 
+    [[1, 1, '-'], [2, 18, '*'], [3, 2, '/']], 
+    [[4, 3, '/'], [4, 3, '/'], [3, 2, '/']]
+    ]
+    '''
+    cage_constraints = generate(9)
+    size = len(cage_constraints[0])
+    number_cages = 0
     for row in range(size):
         for column in range(size):
-            if(instruction_array[row][column][0]> number_groups):
-                number_groups=instruction_array[row][column][0]
+            if(cage_constraints[row][column][0] > number_cages):
+                number_cages = cage_constraints[row][column][0]
 
-    #get the domain of numbers for the board
-    domain=[]
-    for i in range(1,size+1):
-         domain.append(i)
-    board = np.zeros(size * size).reshape(size, size)
-    board = fill_obvious(board, instruction_array, size)
-    is_solved, solved = solve_board(board, instruction_array, size, number_groups, domain)
+    # store cages
+    cages = make_cages(cage_constraints)
+    # get the domain of numbers for the grid [1....n]
+    domain = []
+    for i in range(1, size+1):
+        domain.append(i)
+    # initiate grid
+    grid = np.zeros(size * size).reshape(size, size)
+    # most constrained variable heuristic
+    grid = fill_most_constrained(grid, cage_constraints, size)
+    is_solved, solved = solve_kenken(
+        grid, cage_constraints, size, number_cages, domain)
     if is_solved:
         print(solved)
     else:
