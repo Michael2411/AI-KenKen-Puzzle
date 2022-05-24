@@ -1,8 +1,6 @@
 from random import seed, random, shuffle, randint, choice
 from functools import reduce
 
-from sqlalchemy import false, true
-
 
 def operation(operator):
     """
@@ -112,6 +110,7 @@ def generate(size):
 
     koko_cages = []
     for i in range(1, size+1):
+        cages_row = []
         for j in range(1, size+1):
             cell = (i, j)
             for k in range(0, len(cages)):
@@ -120,16 +119,16 @@ def generate(size):
                         #print("box", k+1)
                         # save number of cage , target , op
                         cell_type = [k+1, cages[k][2], cages[k][1]]
-                        koko_cages.append(cell_type)
+                        cages_row.append(cell_type)
                         break
+        koko_cages.append(cages_row)
 
-    return cages, koko_cages, board
+    return cages, koko_cages
 
 
-cages, koko, board = generate(3)
+cages, koko = generate(3)
 print("cages", cages)
 print("koko cages", koko)
-print("board", board)
 # print(cell)
 
 # return size, cages
