@@ -4,38 +4,44 @@ from functools import reduce
 import numpy as np
 from Generate import generate
 operator_dict = {"+": operator.add,
-                     "-": operator.sub,
-                     "*": operator.mul,
-                     "/": operator.truediv}
+                 "-": operator.sub,
+                 "*": operator.mul,
+                 "/": operator.truediv}
+
+
 def calculate(numbers, target, op):
     operation = operator_dict[op]
     total = reduce(operation, numbers)
     return total == target
 
-#check the domain of valid numbers for each cell before inserting a number in it
+# check the domain of valid numbers for each cell before inserting a number in it
+
+
 def valid_number(row, column, grid, size):
-    valid_numbers = set(range(1,size+1))
+    valid_numbers = set(range(1, size+1))
     for i in range(0, size):
         valid_numbers.discard(grid[row, i])
         valid_numbers.discard(grid[i, column])
     yield from valid_numbers
 
-def cage_calc(grid,cages,cage_number):
-        cage = list(cages.items())[cage_number]
-        target =cage[1][0]
-        operation = cage[1][1]
-        if operation=='=':
-            return True
-        cells = cage[1][2]
-        list_numbers=[]
-        for r,c in cells:
-            list_numbers.append(grid[r,c])
-        if(operation=='-' or operation=='/'):
-            list_numbers.sort(reverse=True)
-        if calculate(list_numbers, target, operation):
-            return True          # the beak skips over the else
-        else:
-            return False           # this is done if the loop finishes normal
+
+def cage_calc(grid, cages, cage_number):
+    cage = list(cages.items())[cage_number]
+    target = cage[1][0]
+    operation = cage[1][1]
+    if operation == '=':
+        return True
+    cells = cage[1][2]
+    list_numbers = []
+    for r, c in cells:
+        list_numbers.append(grid[r, c])
+    if(operation == '-' or operation == '/'):
+        list_numbers.sort(reverse=True)
+    if calculate(list_numbers, target, operation):
+        return True          # the beak skips over the else
+    else:
+        return False           # this is done if the loop finishes normal
+
 
 def grid_full(grid, size):
     for row in range(size):
@@ -44,28 +50,31 @@ def grid_full(grid, size):
                 return False
     return True
 
-def cage_full(grid,cages,cage_number):
-        cage = list(cages.items())[cage_number]
-        cells = cage[1][2]
-        list_numbers=[]
-        for r,c in cells:
-            if grid[r,c]==0:
-                return False
-        return True
 
-def cage_check(grid,cages,number_cages):
+def cage_full(grid, cages, cage_number):
+    cage = list(cages.items())[cage_number]
+    cells = cage[1][2]
+    list_numbers = []
+    for r, c in cells:
+        if grid[r, c] == 0:
+            return False
+    return True
+
+
+def cage_check(grid, cages, number_cages):
     for k in range(number_cages):
-        if cage_full(grid, cages,k):
-            if cage_calc(grid, cages,k):
+        if cage_full(grid, cages, k):
+            if cage_calc(grid, cages, k):
                 continue
             return False
     return True
-                
-def solve_kenken(grid, cage_constraints, size, number_cages,cages):
+
+
+def solve_kenken(grid, cage_constraints, size, number_cages, cages):
     if grid_full(grid, size):
-        #if is_valid_sum(grid, cages):
+        # if is_valid_sum(grid, cages):
         return True, grid
-       #return False, grid
+       # return False, grid
     for i, j in product([row for row in range(size)],
                         [column for column in range(size)]):  # Product is from itertools library
         if grid[i, j] != 0:
@@ -73,9 +82,10 @@ def solve_kenken(grid, cage_constraints, size, number_cages,cages):
         for number in valid_number(i, j, grid, size):
             grid[i, j] = number
             if(not cage_check(grid, cages, number_cages)):
-                grid[i,j]=0
+                grid[i, j] = 0
                 continue
-            is_solved, grid = solve_kenken(grid, cage_constraints, size, number_cages,cages)
+            is_solved, grid = solve_kenken(
+                grid, cage_constraints, size, number_cages, cages)
             if is_solved:
                 return True, grid
             grid[i, j] = 0
@@ -95,12 +105,13 @@ def make_cages(cage_constraints):
     cages = {}
     for r in range(0, size):
         for c in range(0, size):
-            cage_number,target,op = cage_constraints[r][c]
+            cage_number, target, op = cage_constraints[r][c]
             if op:
                 if cage_number not in cages:
                     cages[cage_number] = [target, op, []]
-                cages[cage_number][2].append((r,c))
+                cages[cage_number][2].append((r, c))
     return cages
+
 
 if __name__ == "__main__":
     '''
@@ -114,26 +125,27 @@ if __name__ == "__main__":
     [[23, 18, '+'], [26, 7, '='], [24, 720, '*'], [24, 720, '*'], [24, 720, '*'], [25, 1134, '*'], [27, 11, '+'], [27, 11, '+'], [27, 11, '+']], 
     [[23, 18, '+'], [23, 18, '+'], [28, 315, '*'], [29, 4, '='], [25, 1134, '*'], [25, 1134, '*'], [30, 14, '+'], [30, 14, '+'], [30, 14, '+']], 
     [[31, 1, '-'], [31, 1, '-'], [28, 315, '*'], [28, 315, '*'], [28, 315, '*'], [32, 8, '='], [33, 108, '*'], [33, 108, '*'], [33, 108, '*']]]
-    
+
     cage_constraints =[
     [[1, 6, '*'], [2, 3, '='], [3, 6, '*']], 
     [[1, 6, '*'], [1, 6, '*'], [3, 6, '*']], 
     [[4, 2, '='], [1, 6, '*'], [3, 6, '*']]
     ]
     '''
-    cages_gui, cage_constraints = generate(9)
+    cage_constraints = generate(3)
     size = len(cage_constraints[0])
 
-    number_cages=0
+    number_cages = 0
     for row in range(size):
         for column in range(size):
-            if(cage_constraints[row][column][0]> number_cages):
-                number_cages=cage_constraints[row][column][0]
-            
+            if(cage_constraints[row][column][0] > number_cages):
+                number_cages = cage_constraints[row][column][0]
+
     cages = make_cages(cage_constraints)
     grid = np.zeros(size * size).reshape(size, size)
     grid = fill_most_constrained(grid, cage_constraints, size)
-    is_solved, solved = solve_kenken(grid, cage_constraints, size, number_cages,cages)
+    is_solved, solved = solve_kenken(
+        grid, cage_constraints, size, number_cages, cages)
     if is_solved:
         print(solved)
     else:
