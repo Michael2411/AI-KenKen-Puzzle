@@ -101,7 +101,7 @@ def fill_most_constrained(grid, cage_constraints, size):
     return grid
 
 
-def make_cages(cage_constraints):
+def make_cages(cage_constraints,size):
     cages = {}
     for r in range(0, size):
         for c in range(0, size):
@@ -112,9 +112,34 @@ def make_cages(cage_constraints):
                 cages[cage_number][2].append((r, c))
     return cages
 
+def forward_checking(grid):
+    cage_constraints = grid
+    size = len(cage_constraints[0])
 
-if __name__ == "__main__":
-    '''
+    number_cages = 0
+    for row in range(size):
+        for column in range(size):
+            if(cage_constraints[row][column][0] > number_cages):
+                number_cages = cage_constraints[row][column][0]
+
+    cages = make_cages(cage_constraints,size)
+    grid = np.zeros(size * size).reshape(size, size)
+    grid = fill_most_constrained(grid, cage_constraints, size)
+    is_solved, solved = solve_kenken(
+        grid, cage_constraints, size, number_cages, cages)
+    if is_solved:
+        solved=solved.astype(int)
+        return(solved)
+    else:
+        solved = -1
+        return solved
+
+
+
+grid= generate(7)
+solved=forward_checking(grid)
+print(solved)
+'''
     cage_constraints = [
     [[1, 2, '/'], [1, 2, '/'], [2, 5, '-'], [3, 3, '='], [4, 5, '='], [5, 6, '='], [6, 4, '-'], [7, 18, '+'], [7, 18, '+']],
     [[8, 270, '*'], [8, 270, '*'], [2, 5, '-'], [9, 23, '+'], [9, 23, '+'], [10, 4, '-'], [6, 4, '-'], [11, 19, '+'], [7, 18, '+']], 
@@ -131,22 +156,5 @@ if __name__ == "__main__":
     [[1, 6, '*'], [1, 6, '*'], [3, 6, '*']], 
     [[4, 2, '='], [1, 6, '*'], [3, 6, '*']]
     ]
-    '''
-    cage_constraints = generate(3)
-    size = len(cage_constraints[0])
-
-    number_cages = 0
-    for row in range(size):
-        for column in range(size):
-            if(cage_constraints[row][column][0] > number_cages):
-                number_cages = cage_constraints[row][column][0]
-
-    cages = make_cages(cage_constraints)
-    grid = np.zeros(size * size).reshape(size, size)
-    grid = fill_most_constrained(grid, cage_constraints, size)
-    is_solved, solved = solve_kenken(
-        grid, cage_constraints, size, number_cages, cages)
-    if is_solved:
-        print(solved)
-    else:
-        print("Cannot solve")
+'''
+    
