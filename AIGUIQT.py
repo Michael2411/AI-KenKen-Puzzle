@@ -50,6 +50,7 @@ class Main(QMainWindow, MainUI):
             size = 9
         global grid
         grid = Generate.generate(size)
+        print(grid)
 
     def startPlay(self):
         print(size, grid)

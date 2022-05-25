@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>718</width>
-    <height>496</height>
+    <height>313</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>11</x>
+      <x>130</x>
       <y>11</y>
       <width>437</width>
       <height>33</height>
@@ -104,7 +104,7 @@
      <rect>
       <x>20</x>
       <y>190</y>
-      <width>279</width>
+      <width>311</width>
       <height>21</height>
      </rect>
     </property>
@@ -112,58 +112,38 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;PLEASE CHOOSE THE ALGORITHM:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>220</y>
-      <width>587</width>
-      <height>46</height>
+      <x>20</x>
+      <y>230</y>
+      <width>518</width>
+      <height>30</height>
      </rect>
     </property>
-    <property name="title">
-     <string/>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QRadioButton" name="radioButton_7">
-         <property name="text">
-          <string>Backtracking</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_8">
-         <property name="text">
-          <string>Backtracking with forward checking</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_9">
-         <property name="text">
-          <string>Backtracking with arc consistency</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QPushButton" name="btn_backtrack">
+       <property name="text">
+        <string>Backtracking</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_forward">
+       <property name="text">
+        <string>Backtracking with forward checking</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_arc">
+       <property name="text">
+        <string>Backtracking with arc consistency</string>
+       </property>
+      </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QPushButton" name="btn_play">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>290</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>START </string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

@@ -125,10 +125,9 @@ def generate(size):
 
     return return_cages
 
-
-if __name__ == "__main__":
-    cages = generate(3)
-    print("cages", cages)
+# if __name__ == "__main__":
+#     cages = generate(3)
+#     print("cages", cages)
 # print(cell)
 
 # return size, cages

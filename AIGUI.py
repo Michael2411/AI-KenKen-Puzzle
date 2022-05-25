@@ -70,16 +70,15 @@ def applyGrid(screen, grid, rectangle_list):
 
             else:
                 for index in cage_color:
-                    print(index)
+                    #print(index)
                     if index[0] == cell[0]:
                         pygame.draw.rect(screen, index[1], recCell[0])
                         pygame.draw.rect(
                             screen, (255, 255, 255), recCell[0], 2)
-
             #print(index, cell)
             # r = rectangle_list[index][3]
             # for x, y, r in rectangle_list[index]:
-    print(cage_color)
+    #print(cage_color)
 
 
 def GamePlaying(size, grid):
