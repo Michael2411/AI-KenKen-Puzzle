@@ -45,7 +45,7 @@ def grid_full(grid, size):
     return True
 
 
-def check_number(grid, i, j):
+def check_number(grid, i, j,size):
     for k in range(0, size):
         if ((grid[i, j] == grid[k, j]) & (k != i)):
             return 1
@@ -73,7 +73,7 @@ def cage_check(grid, cages, number_cages):
     return True
 
 
-def solve_kenken(grid, cage_constraints, size, number_cages, domain):
+def solve_kenken(grid, cage_constraints, size, number_cages, domain,cages):
     if grid_full(grid, size):
         return True, grid
     for i, j in product([row for row in range(size)],
@@ -83,7 +83,7 @@ def solve_kenken(grid, cage_constraints, size, number_cages, domain):
         for number in domain:
             grid[i, j] = number
             ################
-            number_not_valid = check_number(grid, i, j)
+            number_not_valid = check_number(grid, i, j,size)
             if(number_not_valid):
                 grid[i, j] = 0
                 continue
@@ -92,7 +92,7 @@ def solve_kenken(grid, cage_constraints, size, number_cages, domain):
                 grid[i, j] = 0
                 continue
             is_solved, grid = solve_kenken(
-                grid, cage_constraints, size, number_cages, domain)
+                grid, cage_constraints, size, number_cages, domain,cages)
             if is_solved:
                 return True, grid
             grid[i, j] = 0
@@ -109,7 +109,7 @@ def fill_most_constrained(grid, cage_constraints, size):
     return grid
 
 
-def make_cages(cage_constraints):
+def make_cages(cage_constraints,size):
     cages = {}
     for r in range(0, size):
         for c in range(0, size):
@@ -120,9 +120,39 @@ def make_cages(cage_constraints):
                 cages[cage_number][2].append((r, c))
     return cages
 
+def backtracking(grid):
+    cage_constraints = grid
+    size = len(cage_constraints[0])
+    number_cages = 0
+    for row in range(size):
+        for column in range(size):
+            if(cage_constraints[row][column][0] > number_cages):
+                number_cages = cage_constraints[row][column][0]
 
-if __name__ == "__main__":
-    '''
+    # store cages
+    cages = make_cages(cage_constraints,size)
+    # get the domain of numbers for the grid [1....n]
+    domain = []
+    for i in range(1, size+1):
+        domain.append(i)
+    # initiate grid
+    grid = np.zeros(size * size).reshape(size, size)
+    # most constrained variable heuristic
+    grid = fill_most_constrained(grid, cage_constraints, size)
+    is_solved, solved = solve_kenken(
+        grid, cage_constraints, size, number_cages, domain,cages)
+    if is_solved:
+        solved=solved.astype(int)
+        return solved
+    else:
+        solved = -1
+        return solved
+
+
+grid= generate(6)
+solved=backtracking(grid)
+print(solved)
+'''
     cage_constraints =[
         [[1, 6, '*'], [2, 3, '='], [3, 6, '*']], 
         [[1, 6, '*'], [1, 6, '*'], [3, 6, '*']], 
@@ -134,29 +164,5 @@ if __name__ == "__main__":
     [[1, 1, '-'], [2, 18, '*'], [3, 2, '/']], 
     [[4, 3, '/'], [4, 3, '/'], [3, 2, '/']]
     ]
-    '''
-    cage_constraints = generate(9)
-    size = len(cage_constraints[0])
-    number_cages = 0
-    for row in range(size):
-        for column in range(size):
-            if(cage_constraints[row][column][0] > number_cages):
-                number_cages = cage_constraints[row][column][0]
-
-    # store cages
-    cages = make_cages(cage_constraints)
-    # get the domain of numbers for the grid [1....n]
-    domain = []
-    for i in range(1, size+1):
-        domain.append(i)
-    # initiate grid
-    grid = np.zeros(size * size).reshape(size, size)
-    # most constrained variable heuristic
-    grid = fill_most_constrained(grid, cage_constraints, size)
-    is_solved, solved = solve_kenken(
-        grid, cage_constraints, size, number_cages, domain)
-    if is_solved:
-        solved=solved.astype(int)
-        print(solved)
-    else:
-        print("Cannot solve")
+'''
+    
