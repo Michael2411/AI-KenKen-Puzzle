@@ -145,13 +145,13 @@ def backtracking(grid):
         solved=solved.astype(int)
         return solved
     else:
-        solved = -1
+        solved = []
         return solved
 
 
-grid= generate(6)
-solved=backtracking(grid)
-print(solved)
+# grid= generate(6)
+# solved=backtracking(grid)
+# print(solved)
 '''
     cage_constraints =[
         [[1, 6, '*'], [2, 3, '='], [3, 6, '*']], 

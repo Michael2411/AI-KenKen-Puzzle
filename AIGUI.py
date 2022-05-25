@@ -11,11 +11,14 @@ for i in range(50):
     r = random.randint(0, 255)
     g = random.randint(0, 255)
     b = random.randint(0, 255)
-    globalColors.append((r, g, b))
+    if r == g and g == b:  # execlude dark colours
+        pass
+    elif (r, g, b) not in globalColors:  # prevent repeating numbers
+        globalColors.append((r, g, b))
 
 
-def writeText(screen, word, position):
-    font = pygame.font.SysFont("Arial", 30)
+def writeText(screen, word, position, font):
+    font = pygame.font.SysFont("Arial", font)
     text = font.render(word, True, (0, 0, 0))
     screen.blit(text, position)
 
@@ -64,9 +67,10 @@ def applyGrid(screen, grid, rectangle_list):
                 pygame.draw.rect(screen, globalColors[globalidex], recCell[0])
                 pygame.draw.rect(screen, (255, 255, 255), recCell[0], 2)
                 if (cell[2] == "="):
-                    writeText(screen, str(cell[1]), recCell[0].topleft)
+                    writeText(screen, str(cell[1]), recCell[0].topleft, 30)
                 else:
-                    writeText(screen, str(cell[1])+cell[2], recCell[0].topleft)
+                    writeText(screen, str(cell[1]) +
+                              cell[2], recCell[0].topleft, 30)
 
             else:
                 for index in cage_color:
@@ -81,7 +85,17 @@ def applyGrid(screen, grid, rectangle_list):
     #print(cage_color)
 
 
-def GamePlaying(size, grid):
+def applySoution(screen, solution, rectangle_list):
+    for rows, solRows in zip(rectangle_list, solution):
+        i = 0
+        print(rows, solRows, "rows1")
+        for cell in rows:
+            writeText(screen, str(solRows[i]), cell[0].center, 20)
+            #print(cell, solRows[i], "rows")
+            i += 1
+
+
+def GamePlaying(size, grid, solution):
     pygame.init()
 
     # Set up the drawing window
@@ -106,6 +120,9 @@ def GamePlaying(size, grid):
         screen.fill((0, 0, 0))
         rectangle_list = drawGrid(screen, size)
         applyGrid(screen, grid, rectangle_list)
+        print(grid, solution, "grid")
+        applySoution(screen, solution, rectangle_list)
+
 
         # union_list_y = []
         # union_list_x = []

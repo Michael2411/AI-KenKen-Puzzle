@@ -131,14 +131,13 @@ def forward_checking(grid):
         solved=solved.astype(int)
         return(solved)
     else:
-        solved = -1
+        solved = []
         return solved
 
 
-
-grid= generate(7)
-solved=forward_checking(grid)
-print(solved)
+# grid= generate(7)
+# solved=forward_checking(grid)
+# print(solved)
 '''
     cage_constraints = [
     [[1, 2, '/'], [1, 2, '/'], [2, 5, '-'], [3, 3, '='], [4, 5, '='], [5, 6, '='], [6, 4, '-'], [7, 18, '+'], [7, 18, '+']],
