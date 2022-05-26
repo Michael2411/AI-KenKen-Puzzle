@@ -123,11 +123,13 @@ def generate(size):
                         break
         return_cages.append(cages_row)
 
-    return return_cages
+    return return_cages, cages
 
-# if __name__ == "__main__":
-#     cages = generate(3)
-#     print("cages", cages)
-# print(cell)
+
+if __name__ == "__main__":
+    cages, ziko = generate(3)
+    print("cages", cages)
+    print("ziko", ziko)
+ # print(cell)
 
 # return size, cages
