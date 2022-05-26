@@ -67,7 +67,7 @@ def cageConstraint(A,variables):
 
 
 def neighborConstraint (A,a,B,b):
-    if B in A['neighbors'] and a == b:
+    if B['cellNo'] in A['neighbors'] and a == b:
          return False
     else:
        return True
@@ -106,7 +106,13 @@ def generateNeighbours (variables , size):
 def AC3(variables, queue=None, removals=None):
     """[Figure 6.3]"""
     if queue is None:
-        queue = [(Xi, Xk) for Xi in variables for Xk in Xi['neighbors']]
+        queue=[]
+        # queue = [(Xi, Xk) for Xi in variables for Xk in Xi['neighbors']]
+        for Xi in variables:
+            for Xk in Xi['neighbors']:
+               for z in variables:
+                   if(Xk==z['cellNo']):
+                      queue.append((Xi,z))
         # print(queue)
     # csp.support_pruning()
     while queue:
@@ -115,8 +121,11 @@ def AC3(variables, queue=None, removals=None):
             if not Xi['domain']:
                 return False
             for Xk in Xi['neighbors']:
-                if Xk != Xi:
-                    queue.append((Xk, Xi))
+                # if Xk != Xi:
+                #     queue.append((Xk, Xi))
+                for z in variables:
+                   if(Xk==z['cellNo'] and z['cellNo']!=Xi):
+                      queue.append((z,Xi))
         # print(queue)
     return True
 
@@ -124,10 +133,10 @@ def AC3(variables, queue=None, removals=None):
 def revise( Xi, Xj, removals):
     "Return true if we remove a value."
     revised = False
-    for z in variables :
-      if (z['cellNo']==Xj):
-          domainArray=z['domain']
-          break
+    # for z in variables :
+    #   if (z['cellNo']==Xj):
+    #       domainArray=z['domain']
+    #       break
         #   print('-----------------------')
         #   print(domainArray)
         
@@ -143,7 +152,7 @@ def revise( Xi, Xj, removals):
         # if(not flag):
         #     prune(Xi, x, removals) 
         #     revised=True    
-        if all(not neighborConstraint(Xi, x, Xj, y) for y in  domainArray):
+        if all(not neighborConstraint(Xi, x, Xj, y) for y in  Xj['domain']):
 
             prune(Xi, x, removals)
             # print(Xi)
@@ -171,5 +180,5 @@ if __name__ == '__main__':
 
     generateNeighbours(variables,3)
     k=AC3(variables)
-    # print(variables)
+    print(variables)
     print(k)
