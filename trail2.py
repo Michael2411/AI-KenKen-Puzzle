@@ -21,12 +21,12 @@ class CSP():
         if self.curr_domains is None:
             self.curr_domains = {v: list(self.domains[v]) for v in self.variables}
 
-    def suppose(self, var, value):
-        "Start accumulating inferences from assuming var=value."
-        self.support_pruning()
-        removals = [(var, a) for a in self.curr_domains[var] if a != value]
-        self.curr_domains[var] = [value]
-        return removals
+    # def suppose(self, var, value):
+    #     "Start accumulating inferences from assuming var=value."
+    #     self.support_pruning()
+    #     removals = [(var, a) for a in self.curr_domains[var] if a != value]
+    #     self.curr_domains[var] = [value]
+    #     return removals
 
     def prune(self, var, value, removals):
         "Rule out var=value."
@@ -44,37 +44,34 @@ class CSP():
         return {v: self.curr_domains[v][0]
                 for v in self.variables if 1 == len(self.curr_domains[v])}
 
-   
+
+    def AC3(self,csp, queue=None, removals=None):
+        """[Figure 6.3]"""
+        if queue is None:
+            queue = [(Xi, Xk) for Xi in csp.variables for Xk in csp.neighbors[Xi]]
+        csp.support_pruning()
+        while queue:
+            (Xi, Xj) = queue.pop()
+            if self.revise(csp, Xi, Xj, removals):
+                if not csp.curr_domains[Xi]:
+                    return False
+                for Xk in csp.neighbors[Xi]:
+                    if Xk != Xi:
+                        queue.append((Xk, Xi))
+        return True
+
+    def revise(self,csp, Xi, Xj, removals):
+            "Return true if we remove a value."
+            revised = False
+            for x in csp.curr_domains[Xi][:]:
+                # If Xi=x conflicts with Xj=y for every possible y, eliminate Xi=x
+                if all(not csp.constraints(Xi, x, Xj, y) for y in csp.curr_domains[Xj]):
+                    csp.prune(Xi, x, removals)
+                    revised = True
+            return revised   
 
 # ______________________________________________________________________________
 # Constraint Propagation with AC-3
-
-
-def AC3(csp, queue=None, removals=None):
-    """[Figure 6.3]"""
-    if queue is None:
-        queue = [(Xi, Xk) for Xi in csp.variables for Xk in csp.neighbors[Xi]]
-    csp.support_pruning()
-    while queue:
-        (Xi, Xj) = queue.pop()
-        if revise(csp, Xi, Xj, removals):
-            if not csp.curr_domains[Xi]:
-                return False
-            for Xk in csp.neighbors[Xi]:
-                if Xk != Xi:
-                    queue.append((Xk, Xi))
-    return True
-
-
-def revise(csp, Xi, Xj, removals):
-    "Return true if we remove a value."
-    revised = False
-    for x in csp.curr_domains[Xi][:]:
-        # If Xi=x conflicts with Xj=y for every possible y, eliminate Xi=x
-        if all(not csp.constraints(Xi, x, Xj, y) for y in csp.curr_domains[Xj]):
-            csp.prune(Xi, x, removals)
-            revised = True
-    return revised
 
 
 

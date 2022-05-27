@@ -398,37 +398,38 @@ def forward_checking(grid):
 
 
 # if __name__ == '__main__':
+class Initialize():
+    
+    def __init__(self,size, grid, arc):
+        #grid,arc= generate(3)
+        # print(arc)
+        global kenken
+        kenken = KenKen(size, arc)
+        global game_kenken
+        game_kenken = trail2.CSP(
+            kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
+        x = trail2.CSP.AC3(game_kenken)
+        # print(game_kenken.curr_domains)
+        global arc_array
+        mydomain = []
+        myListDomain = []
+        if(x):
+            for i in range(1, size+1):
+                mydomain = []
+                for j in range(1, size+1):
+                    mydomain.append(game_kenken.curr_domains['K'+str(i)+str(j)])
+                myListDomain.append(mydomain)
+        arc_array = myListDomain
 
-def start_arc(size, grid, arc):
-    #grid,arc= generate(3)
-    # print(arc)
-    global kenken
-    kenken = KenKen(size, arc)
-    global game_kenken
-    game_kenken = trail2.CSP(
-        kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
-    x = trail2.AC3(game_kenken)
-    # print(game_kenken.curr_domains)
-    global arc_array
-    mydomain = []
-    myListDomain = []
-    if(x):
-        for i in range(1, size+1):
-            mydomain = []
-            for j in range(1, size+1):
-                mydomain.append(game_kenken.curr_domains['K'+str(i)+str(j)])
-            myListDomain.append(mydomain)
-    arc_array = myListDomain
+        # print(grid)
+        # print("arc_array:",arc_array)
+        # print(arc_array[0][1])
+        solved_arc = forward_checking(grid)
+        return solved_arc
+        # print(solved_arc)
+        # kenken.display(trail2.CSP.backtracking_search(game_kenken, inference=trail2.CSP.mac), size)
 
-    # print(grid)
-    # print("arc_array:",arc_array)
-    # print(arc_array[0][1])
-    solved_arc = forward_checking(grid)
-    return solved_arc
-    # print(solved_arc)
-    # kenken.display(trail2.CSP.backtracking_search(game_kenken, inference=trail2.CSP.mac), size)
-
-# if __name__ == '__main__':
-#     grid,arc=generate(3)
-#     sol= start_arc(3,grid,arc)
-#     print(sol)
+    # if __name__ == '__main__':
+    #     grid,arc=generate(3)
+    #     sol= start_arc(3,grid,arc)
+    #     print(sol)
