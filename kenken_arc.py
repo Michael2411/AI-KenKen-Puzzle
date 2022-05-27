@@ -6,7 +6,7 @@ import trail2
 
 class KenKen():
     
-    def __init__(self, size, lines):
+    def __init__(self, size, mylist):
 
         self.variables = list()
         self.neighbors = dict()
@@ -43,22 +43,41 @@ class KenKen():
     
     
         """Create constraint data lists"""
-        for l in lines:
-            var, op, val = l.split()
+        for l in mylist:
+            # var, op, val = l.split()
     
-            self.blockVar.append(re.findall('\d+', var))
+            # self.blockVar.append(re.findall('\d+', var))
+            # self.blockOp.append(op)
+            # self.blockValue.append(int(val))
+    
+            # var, op, val = l.split()
+            var=l[0]
+            op=l[1]
+            val=l[2]
+            
+            self.blockVar.append(var)
             self.blockOp.append(op)
             self.blockValue.append(int(val))
-    
-    
+           
+       
+        # print(self.blockOp)
+        # print(self.blockValue)   
+        # print(self.blockVar)
         for i in range(len(self.blockVar)):
             blockList = []
-            for j in range(0, len(self.blockVar[i]), 2):
-                string = 'K' + str(self.blockVar[i][j]) + str(self.blockVar[i][j+1])
+            for j in range(0, len(self.blockVar[i])):
+                mystring=str(self.blockVar[i][j])
+                myvar=len(mystring)
+                mystring=mystring[1:myvar-1]
+                newstring=mystring.replace(', ','')
+                string = 'K' + newstring 
+                # print(string)
                 blockList.append(string)
     
-            self.blockVariables.append(blockList)                
-        
+            self.blockVariables.append(blockList)
+            print(self.blockVariables)                
+
+   
 
     def kenken_constraint(self, A, a, B, b):
         if B in self.neighbors[A] and a == b:
@@ -82,7 +101,7 @@ class KenKen():
     
         if blockA == blockB:
             blockNum = blockA
-            if self.blockOp[blockNum] == "''":
+            if self.blockOp[blockNum] == "=":
                 if A != B:
                     return False
                 elif a != b:
@@ -92,7 +111,7 @@ class KenKen():
     
                 return True
     
-            elif self.blockOp[blockNum] == 'add':
+            elif self.blockOp[blockNum] == '+':
                 sum = assigned = 0
     
                 for v in self.blockVariables[blockNum]:
@@ -113,7 +132,7 @@ class KenKen():
                 else:
                     return False
     
-            elif self.blockOp[blockNum] == 'mult':
+            elif self.blockOp[blockNum] == '*':
                 sum = 1
                 assigned = 0
     
@@ -135,10 +154,10 @@ class KenKen():
                 else:
                     return False
     
-            elif self.blockOp[blockNum] == 'div':
+            elif self.blockOp[blockNum] == '/':
                 return max(a, b) / min(a, b) == self.blockValue[blockNum]
     
-            elif self.blockOp[blockNum] == 'sub':
+            elif self.blockOp[blockNum] == '-':
                 return max(a, b) - min(a, b) == self.blockValue[blockNum]
     
         else:
@@ -149,10 +168,10 @@ class KenKen():
     
     		
     def kenken_constraint_op(self, var, val, blockNum):
-        if self.blockOp[blockNum] == "''":
+        if self.blockOp[blockNum] == "=":
             return val == self.blockValue[blockNum]
     
-        elif self.blockOp[blockNum] == 'add':
+        elif self.blockOp[blockNum] == '+':
             sum2 = 0
             assigned2 = 0
     
@@ -171,7 +190,7 @@ class KenKen():
             else:
                 return False
     
-        elif self.blockOp[blockNum] == 'mult':
+        elif self.blockOp[blockNum] == '*':
             sum2 = 1
             assigned2 = 0
     
@@ -190,7 +209,7 @@ class KenKen():
             else:
                 return False
     
-        elif self.blockOp[blockNum] == 'div':
+        elif self.blockOp[blockNum] == '/':
             for v in self.blockVariables[blockNum]:
                 if v != var:
                     constraintVar2 = v
@@ -205,7 +224,7 @@ class KenKen():
     
                 return False
     
-        elif self.blockOp[blockNum] == 'sub':
+        elif self.blockOp[blockNum] == '-':
             for v in self.blockVariables[blockNum]:
                 if v != var:
                     constraintVar2 = v
@@ -240,13 +259,31 @@ if __name__ == '__main__':
     f.close()
 
 
-    kenken = KenKen(size, lines)
+    kenken = KenKen(size, [[[(0,0),(1,0)], '+', 6],
+     [[(0,1),(0,2)], '+', 5],
+      [[(1,1),(1,2)], '*', 3],
+       [[(0,3),(1,3)], '-', 1],
+       [[(0,4),(1,4)], '/' ,2],
+       [[(2,0),(2,1)] ,'-' ,1],
+       [[(2,2),(3,1),(3,2)] ,'*' ,20],
+       [[(2,3),(3,3)] ,'-', 1],
+       [[(2,4),(3,4)], '-' ,2],
+       [[(3,0),(4,0)] ,'+', 5],
+       [[(4,1),(4,2)] ,'/' ,2],
+       [[(4,3),(4,4)] ,'*', 5]])
 
     game_kenken = trail2.CSP(kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
     x=trail2.AC3(game_kenken)
     print(game_kenken.curr_domains)
+    mydomain=[]
+    myListDomain=[]
 
+    for i in range(0,size):
+        mydomain=[]
+        for j in range(0,size):
+          mydomain.append(game_kenken.curr_domains['K'+str(i)+str(j)])
+        myListDomain.append(mydomain)  
          
-        
+    print(myListDomain)
     # kenken.display(trail2.CSP.backtracking_search(game_kenken, inference=trail2.CSP.mac), size)
     
