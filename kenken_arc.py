@@ -2,6 +2,16 @@ import re
 import sys
 
 import trail2
+import operator
+from itertools import product, permutations
+from functools import reduce
+import numpy as np
+from Generate import generate
+
+operator_dict = {"+": operator.add,
+                 "-": operator.sub,
+                 "*": operator.mul,
+                 "/": operator.truediv}
 
 
 class KenKen():
@@ -17,8 +27,8 @@ class KenKen():
         
         
         """Create variables list"""
-        for i in range(size):
-            for j in range(size):
+        for i in range(1, size+1):
+            for j in range(1, size+1):
                 self.variables.append('K' + str(i) + str(j))
     
         """Create domains dictionary"""
@@ -31,7 +41,7 @@ class KenKen():
             coordinateX = int(list(v)[1])
             coordinateY = int(list(v)[2])
     
-            for i in range(size):
+            for i in range(1, size+1):
                 if i != coordinateY:
                     string = 'K' + str(coordinateX) + str(i)
                     dictNeighborValue.append(string)
@@ -75,7 +85,7 @@ class KenKen():
                 blockList.append(string)
     
             self.blockVariables.append(blockList)
-            print(self.blockVariables)                
+            #print(self.blockVariables)                
 
    
 
@@ -240,50 +250,194 @@ class KenKen():
                 return False	
     
     
-    def display(self, dic, size):
-        for i in range(size):
-            for j in range(size):
-                string = 'K' + str(i) + str(j)
-                sys.stdout.write(str(dic[string]) + " ")
-            print()
+    # def display(self, dic, size):
+    #     for i in range(size):
+    #         for j in range(size):
+    #             string = 'K' + str(i) + str(j)
+    #             sys.stdout.write(str(dic[string]) + " ")
+    #         print()
+
+
+
+
+def calculate(numbers, target, op):
+    operation = operator_dict[op]
+    total = reduce(operation, numbers)
+    return total == target
+
+# check the domain of valid numbers for each cell before inserting a number in it
+
+
+# def valid_number(row, column, grid, size):
+#     valid_numbers = set(range(1, size+1))
+#     for i in range(0, size):
+#         valid_numbers.discard(grid[row, i])
+#         valid_numbers.discard(grid[i, column])
+#     yield from valid_numbers 
+
+def valid_number(n,m):
+   valid_numbers = arc_array[n][m]
+   return valid_numbers
+
+
+def cage_calc(grid, cages, cage_number):
+    cage = list(cages.items())[cage_number]
+    target = cage[1][0]
+    operation = cage[1][1]
+    if operation == '=':
+        return True
+    cells = cage[1][2]
+    list_numbers = []
+    for r, c in cells:
+        list_numbers.append(grid[r, c])
+    if(operation == '-' or operation == '/'):
+        list_numbers.sort(reverse=True)
+    if calculate(list_numbers, target, operation):
+        return True          # the beak skips over the else
+    else:
+        return False           # this is done if the loop finishes normal
+
+
+def grid_full(grid, size):
+    for row in range(size):
+        for column in range(size):
+            if grid[row, column] == 0:
+                return False
+    return True
+
+
+def cage_full(grid, cages, cage_number):
+    cage = list(cages.items())[cage_number]
+    cells = cage[1][2]
+    list_numbers = []
+    for r, c in cells:
+        if grid[r, c] == 0:
+            return False
+    return True
+
+
+def cage_check(grid, cages, number_cages):
+    for k in range(number_cages):
+        if cage_full(grid, cages, k):
+            if cage_calc(grid, cages, k):
+                continue
+            return False
+    return True
+
+def check_number(grid,i,j,size):
+    for k in range(0, size):
+        if ((grid[i,j]== grid[k,j])&(k !=i)) :
+            return 1
+        if ((grid[i,j]== grid[i,k])&(k!=j)):
+            return 1
+        #return True
+
+
+def solve_kenken(grid, cage_constraints, size, number_cages, cages):
+    if grid_full(grid, size):
+        # if is_valid_sum(grid, cages):
+        return True, grid
+       # return False, grid
+    for i, j in product([row for row in range(size)],
+                        [column for column in range(size)]):  # Product is from itertools library
+        if grid[i, j] != 0:
+            continue
+        for number in valid_number(i, j):
+            grid[i, j] = number
+            ################
+            number_not_valid = check_number(grid, i, j,size)
+            if(number_not_valid):
+                grid[i,j]=0
+                continue
+            ################
+            if(not cage_check(grid, cages, number_cages)):
+                grid[i, j] = 0
+                continue
+            is_solved, grid = solve_kenken(
+                grid, cage_constraints, size, number_cages, cages)
+            if is_solved:
+                return True, grid
+            grid[i, j] = 0
+        return False, grid
+    return False, grid
+
+
+def fill_most_constrained(grid, cage_constraints, size):
+    for row in range(size):
+        for column in range(size):
+            if cage_constraints[row][column][2] == '=':
+                grid[row, column] = cage_constraints[row][column][1]
+    return grid
+
+
+def make_cages(cage_constraints,size):
+    cages = {}
+    for r in range(0, size):
+        for c in range(0, size):
+            cage_number, target, op = cage_constraints[r][c]
+            if op:
+                if cage_number not in cages:
+                    cages[cage_number] = [target, op, []]
+                cages[cage_number][2].append((r, c))
+    return cages
+
+def forward_checking(grid):
+    cage_constraints = grid
+    size = len(cage_constraints[0])
+
+    number_cages = 0
+    for row in range(size):
+        for column in range(size):
+            if(cage_constraints[row][column][0] > number_cages):
+                number_cages = cage_constraints[row][column][0]
+
+    cages = make_cages(cage_constraints,size)
+    grid = np.zeros(size * size).reshape(size, size)
+    grid = fill_most_constrained(grid, cage_constraints, size)
+    is_solved, solved = solve_kenken(
+        grid, cage_constraints, size, number_cages, cages)
+    if is_solved:
+        solved=solved.astype(int)
+        return(solved)
+    else:
+        solved = []
+        return solved
+
+
+
 	
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     
-    """Read first line from file"""
-    with open('kenken.txt', 'r') as f:
-        size = int(f.readline())
-        lines = f.readlines()[1:]
-        print(size)
-
-    f.close()
-
-
-    kenken = KenKen(size, [[[(0,0),(1,0)], '+', 6],
-     [[(0,1),(0,2)], '+', 5],
-      [[(1,1),(1,2)], '*', 3],
-       [[(0,3),(1,3)], '-', 1],
-       [[(0,4),(1,4)], '/' ,2],
-       [[(2,0),(2,1)] ,'-' ,1],
-       [[(2,2),(3,1),(3,2)] ,'*' ,20],
-       [[(2,3),(3,3)] ,'-', 1],
-       [[(2,4),(3,4)], '-' ,2],
-       [[(3,0),(4,0)] ,'+', 5],
-       [[(4,1),(4,2)] ,'/' ,2],
-       [[(4,3),(4,4)] ,'*', 5]])
-
+def start_arc(size,grid,arc):
+    #grid,arc= generate(3)
+    #print(arc)
+    global kenken
+    kenken=KenKen(size,arc)
+    global game_kenken
     game_kenken = trail2.CSP(kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
     x=trail2.AC3(game_kenken)
-    print(game_kenken.curr_domains)
+    #print(game_kenken.curr_domains)
+    global arc_array
     mydomain=[]
     myListDomain=[]
-
-    for i in range(0,size):
-        mydomain=[]
-        for j in range(0,size):
-          mydomain.append(game_kenken.curr_domains['K'+str(i)+str(j)])
-        myListDomain.append(mydomain)  
-         
-    print(myListDomain)
+    if(x):
+        for i in range(1,size+1):
+            mydomain=[]
+            for j in range(1,size+1):
+                mydomain.append(game_kenken.curr_domains['K'+str(i)+str(j)])
+            myListDomain.append(mydomain)  
+    arc_array=myListDomain
+        
+    #print(grid)
+    #print("arc_array:",arc_array)
+    #print(arc_array[0][1])
+    solved_arc=forward_checking(grid)
+    return solved_arc
+    #print(solved_arc)
     # kenken.display(trail2.CSP.backtracking_search(game_kenken, inference=trail2.CSP.mac), size)
     
+# if __name__ == '__main__':
+#     grid,arc=generate(3)
+#     sol= start_arc(3,grid,arc)
+#     print(sol)
