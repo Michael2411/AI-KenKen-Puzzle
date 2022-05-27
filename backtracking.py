@@ -2,7 +2,7 @@ import operator
 from itertools import product
 import numpy as np
 from functools import reduce
-from Generate import generate
+#from Generate import generate
 
 class kenken_backtracking:
     def __init__(self): 
@@ -149,10 +149,10 @@ class kenken_backtracking:
             solved = []
             return solved
 
-game = kenken_backtracking()
-grid, notGrid=generate(6)
-result=game.backtracking(grid)
-print(result)
+# game = kenken_backtracking()
+# grid, notGrid=generate(6)
+# result=game.backtracking(grid)
+# print(result)
 # grid= generate(6)
 # solved=backtracking(grid)
 # print(solved)

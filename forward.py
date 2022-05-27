@@ -2,7 +2,7 @@ import operator
 from itertools import product, permutations
 from functools import reduce
 import numpy as np
-from Generate import generate
+#from Generate import generate
 
 
 class kenken_forward:
@@ -135,10 +135,10 @@ class kenken_forward:
             solved = []
             return solved
 
-game = kenken_forward()
-grid, notGrid=generate(8)
-result=game.forward_checking(grid)
-print(result)
+# game = kenken_forward()
+# grid, notGrid=generate(8)
+# result=game.forward_checking(grid)
+# print(result)
 # grid= generate(7)
 # solved=forward_checking(grid)
 # print(solved)

@@ -36,19 +36,19 @@ def drawGrid(screen, size):
     for i in range(size):
         inner_list = []
         for j in range(size):
-            rectangle = pygame.Rect(xPosition, yPosition, 60, 60)
+            rectangle = pygame.Rect(xPosition, yPosition, 80, 80)
             # LEFT,TOP,RIGHT,BOTTOM
             pygame.draw.rect(screen, (255, 255, 255), rectangle, 2)
             inner_list.append([rectangle])
             #writeText(screen, "3*", rectangle.midtop)
             # draw_text("hi",rect.topleft)
-            xPosition += 60
+            xPosition += 80
             y += 1
         rectangle_list.append(inner_list)
         x += 1
         y = 1
         xPosition = 10  # initial x-position
-        yPosition += 60
+        yPosition += 80
     #print(rectangle_list, "rectangle list")
     return rectangle_list
 

@@ -5,10 +5,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import sys
 import os
-import Generate
 import AIGUI
-import backtracking
-import forward
+from Generate import kenken_generate
+from backtracking import kenken_backtracking
+from forward import kenken_forward
+import kenken_arc
 #from PyQt5.uic import loadUiType
 #MainUI, _ = loadUiType('kenken.ui')
 
@@ -33,6 +34,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.r_7.clicked.connect(self.setSize)  # 9
         self.btn_backtrack.clicked.connect(self.playBacktrack)
         self.btn_forward.clicked.connect(self.playForward)
+        self.btn_arc.clicked.connect(self.playArc)
 
     def setSize(self):
         global size
@@ -52,18 +54,32 @@ class Main(QMainWindow, Ui_MainWindow):
         elif self.r_7.isChecked() == True:
             size = 9
         global grid
-        grid = Generate.generate(size)
-        #print(grid)
+        global arc
+        kenkengenerate = kenken_generate()  # instance
+        grid, arc = kenkengenerate.generate(size)
+        #print(grid, arc)
 
     def playBacktrack(self):
-        solution = backtracking.backtracking(grid)
+        game = kenken_backtracking()
+        solution = game.backtracking(grid)
+        #print(solution)
+        #solution = backtracking.backtracking(grid)
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
             AIGUI.GamePlaying(size, grid, solution)
 
     def playForward(self):
-        solution = forward.forward_checking(grid)
+        game = kenken_forward()
+        solution = game.forward_checking(grid)
+        #solution = forward.forward_checking(grid)
+        if (len(solution) == 0):
+            self.show_warning_messagebox()
+        else:
+            AIGUI.GamePlaying(size, grid, solution)
+
+    def playArc(self):
+        solution = kenken_arc.start_arc(size, grid, arc)
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:

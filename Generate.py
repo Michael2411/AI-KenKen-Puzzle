@@ -128,10 +128,10 @@ class kenken_generate:
         return return_cages, cages
 
 
-kenkengenerate = kenken_generate()  # instance
-cages, ziko = kenkengenerate.generate(3)
-print("cages", cages)
-print("ziko", ziko)
+# kenkengenerate = kenken_generate()  # instance
+# cages, ziko = kenkengenerate.generate(3)
+# print("cages", cages)
+# print("ziko", ziko)
 # if __name__ == "__main__":
 #    cages, ziko = generate(3)
 #    print("cages", cages)
