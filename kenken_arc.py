@@ -8,10 +8,7 @@ from functools import reduce
 import numpy as np
 #from Generate import generate
 
-operator_dict = {"+": operator.add,
-                 "-": operator.sub,
-                 "*": operator.mul,
-                 "/": operator.truediv}
+
 
 
 class KenKen():
@@ -428,7 +425,10 @@ class InitializeArc():
             solved = []
             return solved
 
-
+    operator_dict = {"+": operator.add,
+                    "-": operator.sub,
+                    "*": operator.mul,
+                    "/": operator.truediv}
     # if __name__ == '__main__':
     #     grid,arc=generate(3)
     #     sol= start_arc(3,grid,arc)
