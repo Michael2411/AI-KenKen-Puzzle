@@ -252,16 +252,15 @@ class KenKen():
 # if __name__ == '__main__':
 class InitializeArc():
 
-    def __init__(self,):
-        self.myobj=trail2.CSP()
+   
 
     def getCorrectValues(self,size,grid,arc):
         global kenken
         kenken = KenKen(size, arc)
         global game_kenken
-        game_kenken =self.myobj(
+        game_kenken =trail2.CSP(
             kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
-        x = self.myobj.AC3(game_kenken)
+        x = trail2.ArcConsistency.AC3(game_kenken)
         global arc_array
         mydomain = []
         myListDomain = []
@@ -433,7 +432,9 @@ class InitializeArc():
                     "-": operator.sub,
                     "*": operator.mul,
                     "/": operator.truediv}
-    # if __name__ == '__main__':
-    #     grid,arc=generate(3)
-    #     sol= start_arc(3,grid,arc)
-    #     print(sol)
+   
+                 
+
+if __name__ == '__main__':
+
+        gamme=InitializeArc()

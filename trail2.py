@@ -45,20 +45,25 @@ class CSP():
                 for v in self.variables if 1 == len(self.curr_domains[v])}
 
 
+    
+# ______________________________________________________________________________
+# Constraint Propagation with AC-3
+
+class ArcConsistency():
     def AC3(self,csp, queue=None, removals=None):
-        """[Figure 6.3]"""
-        if queue is None:
-            queue = [(Xi, Xk) for Xi in csp.variables for Xk in csp.neighbors[Xi]]
-        csp.support_pruning()
-        while queue:
-            (Xi, Xj) = queue.pop()
-            if self.revise(csp, Xi, Xj, removals):
-                if not csp.curr_domains[Xi]:
-                    return False
-                for Xk in csp.neighbors[Xi]:
-                    if Xk != Xi:
-                        queue.append((Xk, Xi))
-        return True
+            """[Figure 6.3]"""
+            if queue is None:
+                queue = [(Xi, Xk) for Xi in csp.variables for Xk in csp.neighbors[Xi]]
+            csp.support_pruning()
+            while queue:
+                (Xi, Xj) = queue.pop()
+                if self.revise(csp, Xi, Xj, removals):
+                    if not csp.curr_domains[Xi]:
+                        return False
+                    for Xk in csp.neighbors[Xi]:
+                        if Xk != Xi:
+                            queue.append((Xk, Xi))
+            return True
 
     def revise(self,csp, Xi, Xj, removals):
             "Return true if we remove a value."
@@ -69,10 +74,6 @@ class CSP():
                     csp.prune(Xi, x, removals)
                     revised = True
             return revised   
-
-# ______________________________________________________________________________
-# Constraint Propagation with AC-3
-
 
 
     
