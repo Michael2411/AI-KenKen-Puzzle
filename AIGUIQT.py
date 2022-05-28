@@ -85,7 +85,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def playArc(self):
         game = InitializeArc()
         solution = game.getCorrectValues(size, grid, arc)
-        print(solution)
+        #print(solution)
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
