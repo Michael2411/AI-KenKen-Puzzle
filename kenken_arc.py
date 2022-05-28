@@ -262,6 +262,9 @@ class InitializeArc():
             kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
         x = trail2.CSP.AC3(game_kenken)
         # print(game_kenken.curr_domains)
+
+
+    def getCorrectValues(self,x,size,grid):
         global arc_array
         mydomain = []
         myListDomain = []
@@ -278,10 +281,14 @@ class InitializeArc():
         # print(arc_array[0][1])
         solved_arc = self.forward_checking(grid)
         return solved_arc
+        
         # print(solved_arc)
         # kenken.display(trail2.CSP.backtracking_search(game_kenken, inference=trail2.CSP.mac), size)
+
+
+
     def calculate(self,numbers, target, op):
-        operation = operator_dict[op]
+        operation =self.operator_dict[op]
         total = reduce(operation, numbers)
         return total == target
 
