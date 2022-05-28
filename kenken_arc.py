@@ -5,7 +5,7 @@ import trail2
 import operator
 from itertools import product, permutations
 from functools import reduce
-# import numpy as np
+import numpy as np
 #from Generate import generate
 
 
@@ -251,9 +251,6 @@ class KenKen():
 
 # if __name__ == '__main__':
 class InitializeArc():
-    
-   
-
 
     def getCorrectValues(self,size,grid,arc):
         global kenken
@@ -261,7 +258,7 @@ class InitializeArc():
         global game_kenken
         game_kenken = trail2.CSP(
             kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
-        x = trail2.CSP.AC3(game_kenken)
+        x = self.trail2.CSP.AC3(game_kenken)
         global arc_array
         mydomain = []
         myListDomain = []

@@ -9,7 +9,8 @@ from AIGUI import Game_Gui
 from Generate import kenken_generate
 from backtracking import kenken_backtracking
 from forward import kenken_forward
-import kenken_arc
+from kenken_arc import *
+
 #from PyQt5.uic import loadUiType
 #MainUI, _ = loadUiType('kenken.ui')
 
@@ -57,6 +58,8 @@ class Main(QMainWindow, Ui_MainWindow):
         global arc
         kenkengenerate = kenken_generate()  # instance
         grid, arc = kenkengenerate.generate(size)
+        global gui
+        gui = Game_Gui()
         #print(grid, arc)
 
     def playBacktrack(self):
@@ -67,8 +70,6 @@ class Main(QMainWindow, Ui_MainWindow):
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
-            global gui
-            gui = Game_Gui()
             gui.GamePlaying(size, grid, solution)
 
     def playForward(self):
@@ -82,7 +83,8 @@ class Main(QMainWindow, Ui_MainWindow):
             gui.GamePlaying(size, grid, solution)
 
     def playArc(self):
-        solution = kenken_arc.start_arc(size, grid, arc)
+        game = InitializeArc()
+        solution = game.getCorrectValues(size, grid, arc)
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
