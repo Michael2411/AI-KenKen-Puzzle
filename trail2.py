@@ -50,6 +50,10 @@ class CSP():
 # Constraint Propagation with AC-3
 
 class ArcConsistency():
+
+    def __init__(self):
+        pass
+
     def AC3(self,csp, queue=None, removals=None):
             """[Figure 6.3]"""
             if queue is None:

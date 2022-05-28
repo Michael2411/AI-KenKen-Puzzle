@@ -252,7 +252,12 @@ class KenKen():
 # if __name__ == '__main__':
 class InitializeArc():
 
-   
+    def __init__(self):
+        self.operator_dict = {"+": operator.add,
+                         "-": operator.sub,
+                         "*": operator.mul,
+                         "/": operator.truediv}
+
 
     def getCorrectValues(self,size,grid,arc):
         global kenken
@@ -260,7 +265,9 @@ class InitializeArc():
         global game_kenken
         game_kenken =trail2.CSP(
             kenken.variables, kenken.domains, kenken.neighbors, kenken.kenken_constraint)
-        x = trail2.ArcConsistency.AC3(game_kenken)
+
+        v=trail2.ArcConsistency()
+        x = v.AC3(game_kenken)
         global arc_array
         mydomain = []
         myListDomain = []
@@ -298,7 +305,7 @@ class InitializeArc():
     #         valid_numbers.discard(grid[i, column])
     #     yield from valid_numbers
 
-    def valid_number(n, m):
+    def valid_number(self,n, m):
         valid_numbers = arc_array[n][m]
         return valid_numbers
 
@@ -321,7 +328,7 @@ class InitializeArc():
             return False           # this is done if the loop finishes normal
 
 
-    def grid_full(grid, size):
+    def grid_full(self,grid, size):
         for row in range(size):
             for column in range(size):
                 if grid[row, column] == 0:
@@ -329,7 +336,7 @@ class InitializeArc():
         return True
 
 
-    def cage_full(grid, cages, cage_number):
+    def cage_full(self,grid, cages, cage_number):
         cage = list(cages.items())[cage_number]
         cells = cage[1][2]
         list_numbers = []
@@ -348,7 +355,7 @@ class InitializeArc():
         return True
 
 
-    def check_number(grid, i, j, size):
+    def check_number(self,grid, i, j, size):
         for k in range(0, size):
             if ((grid[i, j] == grid[k, j]) & (k != i)):
                 return 1
@@ -386,7 +393,7 @@ class InitializeArc():
         return False, grid
 
 
-    def fill_most_constrained(grid, cage_constraints, size):
+    def fill_most_constrained(self,grid, cage_constraints, size):
         for row in range(size):
             for column in range(size):
                 if cage_constraints[row][column][2] == '=':
@@ -394,7 +401,7 @@ class InitializeArc():
         return grid
 
 
-    def make_cages(cage_constraints, size):
+    def make_cages(self,cage_constraints, size):
         cages = {}
         for r in range(0, size):
             for c in range(0, size):
@@ -428,10 +435,7 @@ class InitializeArc():
             solved = []
             return solved
 
-    operator_dict = {"+": operator.add,
-                    "-": operator.sub,
-                    "*": operator.mul,
-                    "/": operator.truediv}
+
    
                  
 
