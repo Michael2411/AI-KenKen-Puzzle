@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import sys
 import os
-import AIGUI
+from AIGUI import Game_Gui
 from Generate import kenken_generate
 from backtracking import kenken_backtracking
 from forward import kenken_forward
@@ -67,7 +67,9 @@ class Main(QMainWindow, Ui_MainWindow):
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
-            AIGUI.GamePlaying(size, grid, solution)
+            global gui
+            gui = Game_Gui()
+            gui.GamePlaying(size, grid, solution)
 
     def playForward(self):
         game = kenken_forward()
@@ -76,14 +78,15 @@ class Main(QMainWindow, Ui_MainWindow):
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
-            AIGUI.GamePlaying(size, grid, solution)
+            #gui = Game_Gui()
+            gui.GamePlaying(size, grid, solution)
 
     def playArc(self):
         solution = kenken_arc.start_arc(size, grid, arc)
         if (len(solution) == 0):
             self.show_warning_messagebox()
         else:
-            AIGUI.GamePlaying(size, grid, solution)
+            gui.GamePlaying(size, grid, solution)
 
     def show_warning_messagebox(self):
         msg = QMessageBox()

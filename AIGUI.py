@@ -4,172 +4,129 @@
 import pygame
 import random
 
+class Game_Gui():
+    def __init__(self):
+        self.globalColors = []
+        self.generate_colours()
 
-globalColors = []
+    def generate_colours(self):
+        for i in range(50):
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+            if r == g and g == b:  # execlude dark colours
+                pass
+            elif (r, g, b) not in self.globalColors:  # prevent repeating numbers
+                self.globalColors.append((r, g, b))
 
-for i in range(50):
-    r = random.randint(0, 255)
-    g = random.randint(0, 255)
-    b = random.randint(0, 255)
-    if r == g and g == b:  # execlude dark colours
-        pass
-    elif (r, g, b) not in globalColors:  # prevent repeating numbers
-        globalColors.append((r, g, b))
+    def writeText(self, screen, word, position, font):
+        font = pygame.font.SysFont("Arial", font)
+        text = font.render(word, True, (0, 0, 0))
+        screen.blit(text, position)
 
+    def drawGrid(self, screen, size):
+        xPosition = 10  # left
+        yPosition = 10  # top
 
-def writeText(screen, word, position, font):
-    font = pygame.font.SysFont("Arial", font)
-    text = font.render(word, True, (0, 0, 0))
-    screen.blit(text, position)
-
-
-def drawGrid(screen, size):
-    xPosition = 10  # left
-    yPosition = 10  # top
-
-    # make an array of tuples for each rectangle with an index
-    # (xindex,yindex,xposition,ypositio)
-    rectangle_list = []
-    # draw the table board
-    x = 1
-    y = 1
-    for i in range(size):
-        inner_list = []
-        for j in range(size):
-            rectangle = pygame.Rect(xPosition, yPosition, 80, 80)
-            # LEFT,TOP,RIGHT,BOTTOM
-            pygame.draw.rect(screen, (255, 255, 255), rectangle, 2)
-            inner_list.append([rectangle])
-            #writeText(screen, "3*", rectangle.midtop)
-            # draw_text("hi",rect.topleft)
-            xPosition += 80
-            y += 1
-        rectangle_list.append(inner_list)
-        x += 1
+        # make an array of tuples for each rectangle with an index
+        # (xindex,yindex,xposition,ypositio)
+        rectangle_list = []
+        # draw the table board
+        x = 1
         y = 1
-        xPosition = 10  # initial x-position
-        yPosition += 80
-    #print(rectangle_list, "rectangle list")
-    return rectangle_list
+        for i in range(size):
+            inner_list = []
+            for j in range(size):
+                rectangle = pygame.Rect(xPosition, yPosition, 80, 80)
+                # LEFT,TOP,RIGHT,BOTTOM
+                pygame.draw.rect(screen, (255, 255, 255), rectangle, 2)
+                inner_list.append([rectangle])
+                #writeText(screen, "3*", rectangle.midtop)
+                # draw_text("hi",rect.topleft)
+                xPosition += 80
+                y += 1
+            rectangle_list.append(inner_list)
+            x += 1
+            y = 1
+            xPosition = 10  # initial x-position
+            yPosition += 80
+        #print(rectangle_list, "rectangle list")
+        return rectangle_list
 
+    def applyGrid(self, screen, grid, rectangle_list):
+        cage_number = []
+        cage_color = []
+        globalidex = -1
+        for rows, recRows in zip(grid, rectangle_list):
+            for cell, recCell in zip(rows, recRows):
+                #print(cell, recCell)
+                if cell[0] not in cage_number:
+                    globalidex += 1
+                    cage_number.append(cell[0])
+                    cage_color.append([cell[0], self.globalColors[globalidex]])
+                    pygame.draw.rect(
+                        screen, self.globalColors[globalidex], recCell[0])
+                    pygame.draw.rect(screen, (255, 255, 255), recCell[0], 2)
+                    if (cell[2] == "="):
+                        self.writeText(screen, str(
+                            cell[1]), recCell[0].topleft, 30)
+                    else:
+                        self.writeText(screen, str(cell[1]) +
+                                       cell[2], recCell[0].topleft, 30)
 
-def applyGrid(screen, grid, rectangle_list):
-    cage_number = []
-    cage_color = []
-    globalidex = -1
-    for rows, recRows in zip(grid, rectangle_list):
-        for cell, recCell in zip(rows, recRows):
-            #print(cell, recCell)
-            if cell[0] not in cage_number:
-                globalidex += 1
-                cage_number.append(cell[0])
-                cage_color.append([cell[0], globalColors[globalidex]])
-                pygame.draw.rect(screen, globalColors[globalidex], recCell[0])
-                pygame.draw.rect(screen, (255, 255, 255), recCell[0], 2)
-                if (cell[2] == "="):
-                    writeText(screen, str(cell[1]), recCell[0].topleft, 30)
                 else:
-                    writeText(screen, str(cell[1]) +
-                              cell[2], recCell[0].topleft, 30)
+                    for index in cage_color:
+                        #print(index)
+                        if index[0] == cell[0]:
+                            pygame.draw.rect(screen, index[1], recCell[0])
+                            pygame.draw.rect(
+                                screen, (255, 255, 255), recCell[0], 2)
+                #print(index, cell)
+                # r = rectangle_list[index][3]
+                # for x, y, r in rectangle_list[index]:
+        #print(cage_color)
 
-            else:
-                for index in cage_color:
-                    #print(index)
-                    if index[0] == cell[0]:
-                        pygame.draw.rect(screen, index[1], recCell[0])
-                        pygame.draw.rect(
-                            screen, (255, 255, 255), recCell[0], 2)
-            #print(index, cell)
-            # r = rectangle_list[index][3]
-            # for x, y, r in rectangle_list[index]:
-    #print(cage_color)
+    def applySoution(self, screen, solution, rectangle_list):
+        for rows, solRows in zip(rectangle_list, solution):
+            i = 0
+            #print(rows, solRows, "rows1")
+            for cell in rows:
+                self.writeText(screen, str(solRows[i]), cell[0].center, 20)
+                #print(cell, solRows[i], "rows")
+                i += 1
 
+    def GamePlaying(self, size, grid, solution):
+        pygame.init()
 
-def applySoution(screen, solution, rectangle_list):
-    for rows, solRows in zip(rectangle_list, solution):
-        i = 0
-        print(rows, solRows, "rows1")
-        for cell in rows:
-            writeText(screen, str(solRows[i]), cell[0].center, 20)
-            #print(cell, solRows[i], "rows")
-            i += 1
+        # Set up the drawing window
+        screenWidth = 800
+        screenHeight = 800
+        screen = pygame.display.set_mode([screenWidth, screenHeight])
 
+        #title and icon
+        pygame.display.set_caption("KenKen Puzzle")
+        icon = pygame.image.load('number-puzzle.png')
+        pygame.display.set_icon(icon)
+        # Run until the user asks to quit
+        running = True
+        while running:
 
-def GamePlaying(size, grid, solution):
-    pygame.init()
+            # Did the user click the window close button?
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-    # Set up the drawing window
-    screenWidth = 800
-    screenHeight = 800
-    screen = pygame.display.set_mode([screenWidth, screenHeight])
+        # Fill the background with white
+            screen.fill((0, 0, 0))
+            rectangle_list = self.drawGrid(screen, size)
+            self.applyGrid(screen, grid, rectangle_list)
+            self.applySoution(screen, solution, rectangle_list)
 
-    #title and icon
-    pygame.display.set_caption("KenKen Puzzle")
-    icon = pygame.image.load('number-puzzle.png')
-    pygame.display.set_icon(icon)
-    # Run until the user asks to quit
-    running = True
-    while running:
+            # Flip the display to run any changes
+            pygame.display.flip()
 
-        # Did the user click the window close button?
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-    # Fill the background with white
-        screen.fill((0, 0, 0))
-        rectangle_list = drawGrid(screen, size)
-        applyGrid(screen, grid, rectangle_list)
-        print(grid, solution, "grid")
-        applySoution(screen, solution, rectangle_list)
-
-
-        # union_list_y = []
-        # union_list_x = []
-        # for x, y, r in rectangle_list:
-        #     if(x == 1 and y == 2):
-        #         union_list_y.append(r)
-        #         pygame.draw.rect(screen, (255, 0, 0), r)
-        #         pygame.draw.rect(screen, (255, 255, 255), r,
-        #                      2)  # LEFT,TOP,RIGHT,BOTTOM
-        #         writeText(screen, "new", r.topleft)
-        #         pygame.draw.rect(screen, (255, 0, 0), r)
-        #         # LEFT,TOP,RIGHT,BOTTOM
-        #         pygame.draw.rect(screen, (255, 255, 255), r, 2)
-        #         writeText(screen, "mizo", r.topleft)
-        #     elif (x == 2 and y == 2):
-        #         union_list_y.append(r)
-        #         union_list_x.append(r)
-        #     elif(x == 2 and y == 3):
-        #         union_list_x.append(r)
-
-        # print(union_list_y, "y")
-        # rect_union_y = union_list_y[0].unionall(union_list_y)
-        # pygame.draw.rect(screen, (255, 255, 255), rect_union_y)
-
-        # pygame.draw.rect(screen, (0, 255, 0), rect_union_y, 2)
-
-        # print(union_list_x, "x")
-        # rect_union_x = union_list_x[0].unionall(union_list_x)
-        # pygame.draw.rect(screen, (255, 255, 255), rect_union_x, 2)
-
-        # pygame.draw.rect(screen, (0, 255, 0), rect_union_x, 2)
-
-        # make horizonatal squares of size n
-        # for i in range(4):
-        #     surf=pygame.Surface((50,50)) #create surface with length and width
-        #     surf.fill((255,255,255))
-        #     rect=surf.get_rect()
-        #     screen.blit(surf,(width/2  ,height/2),)#center
-        #     width=width+50
-        # Draw a solid blue circle in the center
-        #pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
-
-        # Flip the display to run any changes
-        pygame.display.flip()
-
-    # Done! Time to quit.
-    pygame.quit()
+        # Done! Time to quit.
+        pygame.quit()
 
 
 # GamePlaying(3, [[[1, 12, '*'], [2, 18, '*'], [2, 18, '*']], [[1, 12, '*'],
