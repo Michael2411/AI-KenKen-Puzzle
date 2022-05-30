@@ -26,6 +26,9 @@ class Main(QMainWindow, Ui_MainWindow):
         super(Main, self).__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.btn_forward.setEnabled(False)
+        self.btn_arc.setEnabled(False)
+        self.btn_backtrack.setEnabled(False)
         self.r_1.clicked.connect(self.setSize)  # 3
         self.r_2.clicked.connect(self.setSize)  # 4
         self.r_3.clicked.connect(self.setSize)  # 5
@@ -38,6 +41,10 @@ class Main(QMainWindow, Ui_MainWindow):
         self.btn_arc.clicked.connect(self.playArc)
 
     def setSize(self):
+        self.btn_forward.setEnabled(True)
+        self.btn_arc.setEnabled(True)
+        self.btn_backtrack.setEnabled(True)
+
         global size
         size = 0
         if self.r_1.isChecked() == True:

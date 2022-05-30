@@ -3,6 +3,7 @@
 # Import and initialize the pygame library
 import pygame
 import random
+import os
 
 class Game_Gui():
     def __init__(self):
@@ -16,6 +17,8 @@ class Game_Gui():
             b = random.randint(0, 255)
             if r == g and g == b:  # execlude dark colours
                 pass
+            elif (r<100 and g==0 and b==0) or (b<100 and g==0 and r==0) or (g<100 and r==0 and b==0): #execlude more dark colous
+                pass
             elif (r, g, b) not in self.globalColors:  # prevent repeating numbers
                 self.globalColors.append((r, g, b))
 
@@ -25,8 +28,8 @@ class Game_Gui():
         screen.blit(text, position)
 
     def drawGrid(self, screen, size):
-        xPosition = 10  # left
-        yPosition = 10  # top
+        xPosition = screen.get_width()/10  # left
+        yPosition = screen.get_height()/10  # top
 
         # make an array of tuples for each rectangle with an index
         # (xindex,yindex,xposition,ypositio)
@@ -34,22 +37,24 @@ class Game_Gui():
         # draw the table board
         x = 1
         y = 1
+        width = xPosition-10
+        height = yPosition-10
         for i in range(size):
             inner_list = []
             for j in range(size):
-                rectangle = pygame.Rect(xPosition, yPosition, 80, 80)
+                rectangle = pygame.Rect(xPosition, yPosition, width, height)
                 # LEFT,TOP,RIGHT,BOTTOM
                 pygame.draw.rect(screen, (255, 255, 255), rectangle, 2)
                 inner_list.append([rectangle])
                 #writeText(screen, "3*", rectangle.midtop)
                 # draw_text("hi",rect.topleft)
-                xPosition += 80
+                xPosition += width
                 y += 1
             rectangle_list.append(inner_list)
             x += 1
             y = 1
-            xPosition = 10  # initial x-position
-            yPosition += 80
+            xPosition = screen.get_width()/10  # initial x-position
+            yPosition += height
         #print(rectangle_list, "rectangle list")
         return rectangle_list
 
@@ -91,36 +96,54 @@ class Game_Gui():
             i = 0
             #print(rows, solRows, "rows1")
             for cell in rows:
-                self.writeText(screen, str(solRows[i]), cell[0].center, 20)
+                self.writeText(screen, str(solRows[i]), cell[0].center, 25)
                 #print(cell, solRows[i], "rows")
                 i += 1
 
+
     def GamePlaying(self, size, grid, solution):
         pygame.init()
+        pygame.mixer.init()
+        crash=pygame.mixer.Sound(os.path.join('mixkit-positive-interface-beep-221.wav'))
+        #pygame.mixer.music.set_volume(0.7)
 
         # Set up the drawing window
-        screenWidth = 800
-        screenHeight = 800
-        screen = pygame.display.set_mode([screenWidth, screenHeight])
+        screenWidth = 700
+        screenHeight = 700
+        screen = pygame.display.set_mode((screenWidth, screenHeight),pygame.RESIZABLE)
 
         #title and icon
         pygame.display.set_caption("KenKen Puzzle")
-        icon = pygame.image.load('number-puzzle.png')
+        icon = pygame.image.load(os.path.join('number-puzzle.png'))
         pygame.display.set_icon(icon)
         # Run until the user asks to quit
         running = True
+        flag = False
+
         while running:
+            screen.fill((0, 0, 0))
+            rectangle_list = self.drawGrid(screen, size)
+            self.applyGrid(screen, grid, rectangle_list)
 
             # Did the user click the window close button?
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
+                if event.type==pygame.KEYDOWN:
+                    crash.play()
+                    flag=True
+                    print(flag)
+
+            if flag:
+                self.applySoution(screen, solution, rectangle_list)
+
+
         # Fill the background with white
-            screen.fill((0, 0, 0))
-            rectangle_list = self.drawGrid(screen, size)
-            self.applyGrid(screen, grid, rectangle_list)
-            self.applySoution(screen, solution, rectangle_list)
+
+
+            #pygame.mixer.Sound.stop(crash)
+
 
             # Flip the display to run any changes
             pygame.display.flip()
