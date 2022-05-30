@@ -59,7 +59,7 @@ for i in range(7):
         print(f'board {number}')
         row+=1
         number+=1
-        wb.save('comparions.xls')
+        wb.save('comparisons.xls')
         #print(f'board number{number} done')
     board_size = board_size+1
 
