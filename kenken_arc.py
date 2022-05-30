@@ -7,7 +7,8 @@ from itertools import product, permutations
 from functools import reduce
 import numpy as np
 #from Generate import generate
-
+from time import time
+global t
 
 
 
@@ -260,6 +261,7 @@ class InitializeArc():
 
 
     def getCorrectValues(self,size,grid,arc):
+        t = time()
         global kenken
         kenken = KenKen(size, arc)
         global game_kenken
@@ -282,8 +284,9 @@ class InitializeArc():
         # print(grid)
         # print("arc_array:",arc_array)
         # print(arc_array[0][1])
+        t = time()-t
         solved_arc = self.forward_checking(grid)
-        return solved_arc
+        return solved_arc,t
         
         # print(solved_arc)
         # kenken.display(trail2.CSP.backtracking_search(game_kenken, inference=trail2.CSP.mac), size)
