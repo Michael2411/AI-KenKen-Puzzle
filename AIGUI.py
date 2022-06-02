@@ -22,9 +22,9 @@ class Game_Gui():
             elif (r, g, b) not in self.globalColors:  # prevent repeating numbers
                 self.globalColors.append((r, g, b))
 
-    def writeText(self, screen, word, position, font):
+    def writeText(self, screen, word, position, font,color):
         font = pygame.font.SysFont("Arial", font)
-        text = font.render(word, True, (0, 0, 0))
+        text = font.render(word, True, color)
         screen.blit(text, position)
 
     def drawGrid(self, screen, size):
@@ -74,10 +74,10 @@ class Game_Gui():
                     pygame.draw.rect(screen, (255, 255, 255), recCell[0], 2)
                     if (cell[2] == "="):
                         self.writeText(screen, str(
-                            cell[1]), recCell[0].topleft, 30)
+                            cell[1]), recCell[0].topleft, 30,(0,0,0))
                     else:
                         self.writeText(screen, str(cell[1]) +
-                                       cell[2], recCell[0].topleft, 30)
+                                       cell[2], recCell[0].topleft, 30,(0,0,0))
 
                 else:
                     for index in cage_color:
@@ -96,7 +96,7 @@ class Game_Gui():
             i = 0
             #print(rows, solRows, "rows1")
             for cell in rows:
-                self.writeText(screen, str(solRows[i]), cell[0].center, 25)
+                self.writeText(screen, str(solRows[i]), cell[0].center, 25,(0,0,0))
                 #print(cell, solRows[i], "rows")
                 i += 1
 
@@ -124,6 +124,8 @@ class Game_Gui():
             screen.fill((0, 0, 0))
             rectangle_list = self.drawGrid(screen, size)
             self.applyGrid(screen, grid, rectangle_list)
+            if not flag:
+                self.writeText(screen, "To see the solution press key-down ",(screen.get_width()/10,screen.get_height()/25), 25 ,(255,255,255))
 
             # Did the user click the window close button?
             for event in pygame.event.get():
@@ -136,6 +138,7 @@ class Game_Gui():
                     print(flag)
 
             if flag:
+
                 self.applySoution(screen, solution, rectangle_list)
 
 
